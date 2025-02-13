@@ -6,6 +6,8 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from time import time
 import requests
 import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 # Carregar o modelo treinado
 modelo_path = "modelo/my_model.keras"  # Substitua pelo caminho do seu modelo .keras
@@ -18,10 +20,46 @@ ALERT_INTERVAL = 30  # Tempo mínimo entre notificações (segundos)
 
 # Configuração da notificação (opcional)
 PUSHBULLET_API_KEY = os.getenv("PUSHBULLET_API_KEY")  # Substitua pela sua chave API do Pushbullet
-SEND_NOTIFICATIONS = True  # Defina como True para enviar notificações
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")  # Substitua pela sua chave API do SendGrid
+SEND_PUSH_NOTIFICATION = True  # Defina como True para enviar notificações via Pushbullet
+SEND_EMAIL_NOTIFICATION = True  # Defina como True para enviar notificações via e-mail
 
 # Variável para controlar tempo da última notificação
 last_notification_time = 0
+
+def send_push_notification(title, message):
+    if PUSHBULLET_API_KEY:
+        url = "https://api.pushbullet.com/v2/pushes"
+        headers = {
+            "Access-Token": PUSHBULLET_API_KEY,
+            "Content-Type": "application/json"
+        }
+        data = {
+            "type": "note",
+            "title": title,
+            "body": message
+        }
+        response = requests.post(url, json=data, headers=headers)
+        
+        if response.status_code == 200:
+            print("[NOTIFICAÇÃO ENVIADA] Objeto cortante detectado!")
+        else:
+            print("[ERRO] Falha ao enviar notificação.")
+    else:
+        print("[ALERTA] Objeto cortante detectado!")
+
+def send_email_notification(title, message):
+    if SENDGRID_API_KEY:
+        message_mail = Mail(
+        from_email='riosistemas@riosistemas.com.br',
+        to_emails='INSIRA SEU EMAIL AQUI',
+        subject=f'[FIAP] {title}',
+        html_content=f'<strong>{message}</strong>')
+        try:
+            sg = SendGridAPIClient(SENDGRID_API_KEY)
+            response = sg.send(message_mail)
+        except Exception as e:
+            print(e.message)
 
 def send_notification(title, message):
     """Envia uma notificação via Pushbullet."""
@@ -30,26 +68,11 @@ def send_notification(title, message):
     
     # Verifica se já passou 30 segundos desde a última notificação
     if (current_time - last_notification_time) >= ALERT_INTERVAL:
-        if SEND_NOTIFICATIONS and PUSHBULLET_API_KEY:
-            url = "https://api.pushbullet.com/v2/pushes"
-            headers = {
-                "Access-Token": PUSHBULLET_API_KEY,
-                "Content-Type": "application/json"
-            }
-            data = {
-                "type": "note",
-                "title": title,
-                "body": message
-            }
-            response = requests.post(url, json=data, headers=headers)
-            
-            if response.status_code == 200:
-                print("[NOTIFICAÇÃO ENVIADA] Objeto cortante detectado!")
-                last_notification_time = current_time  # Atualiza o tempo da última notificação
-            else:
-                print("[ERRO] Falha ao enviar notificação.")
-        else:
-            print("[ALERTA] Objeto cortante detectado!")
+        if SEND_PUSH_NOTIFICATION:
+            send_push_notification(title, message)
+        if SEND_EMAIL_NOTIFICATION:
+            send_email_notification(title, message)
+        last_notification_time = current_time 
     else:
         print("[IGNORADO] Objeto já detectado recentemente.")
 

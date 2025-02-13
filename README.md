@@ -9,17 +9,57 @@ Execute esses seguintes comandos para subir seu ambiente local:
     # .venv\Scripts\activate  # On Windows
     pip install -r requirements.txt 
 
-## Configurando seu dispositivo para notificação
+## Configurando seu dispositivo para notificação por email
+
+1 - Visite o site [SendGrid](https://app.sendgrid.com/), faça o login
+2 - No menu lateral, clique em "Settings" e selecione "API Keys".
+3 - Clique no botão "Create API Key".
+4 - Escolha um nome para a sua key e depois defina Full Access no painel de níveis de permissão
+4 - Com a chave gerada realize os seguintes comandos no seu terminal de preferencia:
+
+No Mac:
+```bash
+    echo "export SENDGRID_API_KEY='YOUR_API_KEY'" > sendgrid.env
+    echo "sendgrid.env" >> .gitignore
+    source ./sendgrid.env
+```
+
+No Windows:
+
+Para expor a variavel temporariamente:
+```bash
+    set SENDGRID_API_KEY=YOUR_API_KEY
+```
+
+Para expor a variavel independente das sessões do terminal:
+```bash
+    set SENDGRID_API_KEY=YOUR_API_KEY
+```
+
+## Configurando seu dispositivo para notificação em push
 
 1 - Visite o site pushbullet.com, faça o login
 2 - Após disso vá em Set up your phone ou clique em Set up your computer caso queira configurar no seu note
 3 - Agora vá em My Account, na parte de accessTokens gere sua chave e guarde esse valor
 4 - Com a chave gerada realize os seguintes comandos no seu terminal de preferencia:
 
+No Mac:
 ```bash
     echo "export PUSHBULLET_API_KEY='YOUR_API_KEY'" > pushbullet.env
     echo "pushbullet.env" >> .gitignore
     source ./pushbullet.env
+```
+
+No Windows:
+
+Para expor a variavel temporariamente:
+```bash
+    set PUSHBULLET_API_KEY=YOUR_API_KEY
+```
+
+Para expor a variavel independente das sessões do terminal:
+```bash
+    set PUSHBULLET_API_KEY=YOUR_API_KEY
 ```
 
 ### Para acessar no celular é necessário realizar esses seguintes passos:
