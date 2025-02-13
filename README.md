@@ -34,7 +34,7 @@ Para expor a variavel temporariamente:
 Para expor a variavel independente das sessões do terminal:
 ```bash
     set SENDGRID_API_KEY=YOUR_API_KEY
-```
+``` 
 
 ## Configurando seu dispositivo para notificação em push
 
