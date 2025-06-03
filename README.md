@@ -1,4 +1,5 @@
 # hackathon-fiap
+Projeto de visão computacional que identifica objetos cortante apartir de um vídeo
 
 ## Preparação do ambiente
 
